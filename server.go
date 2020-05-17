@@ -13,10 +13,7 @@ import (
 )
 
 const (
-	clientID string = "8cc4c901-1852-4e62-a655-699f2c94ffdc"
-	clientSecret string = "OshhDO0d1Y6Hrejsd697Yo4unTar_gI00fHiIASMZGc"
 	host string = "http://localhost:9011"
-	apiKey = "vB_ap-t-zsCbOYv9HhETbbRm1Ue8C3FFP28qJQWfNTo"
 )
 
 var (
@@ -24,10 +21,19 @@ var (
 		Timeout: time.Second * 10,
 	}
 	baseURL, _ = url.Parse(host)
-	client = fusionauth.NewClient(httpClient, baseURL, apiKey)
+	userStore = make(map[string]userSession)
+	faClient *fusionauth.FusionAuthClient
 )
 
+type userSession struct {
+	user fusionauth.User
+	accessToken string
+	refreshToken string
+}
+
 func setupRouter() *gin.Engine {
+	faClient = fusionauth.NewClient(httpClient, baseURL, ApiKey)
+
 	r := gin.Default()
 
 	store := cookie.NewStore([]byte("secret"))
@@ -37,28 +43,22 @@ func setupRouter() *gin.Engine {
 
 	r.GET("/", indexRoute)
 	r.GET("/oauth/redirect", oauthRedirectRoute)
+	r.GET("/logout", logoutRoute)
 	r.GET("/authenticated", authdRoute)
 
 	return r
 }
 
 func indexRoute(c *gin.Context) {
-	session := sessions.Default(c)
-	userFirstName, ok := session.Get("userFirstName").(string)
-
-	name := ""
-	if ok && userFirstName != "" {
-		name = userFirstName
-	}
-
-	c.HTML(http.StatusOK, "index.tmpl", gin.H{ "Name": name, "ClientID": clientID })
+	userSesh := getUser(c)
+	c.HTML(http.StatusOK, "index.tmpl", gin.H{ "Name": userSesh.user.FirstName, "ClientID": ClientID })
 }
 
 func oauthRedirectRoute(c *gin.Context) {
-	token, oauthErr, err := client.ExchangeOAuthCodeForAccessToken(
+	token, oauthErr, err := faClient.ExchangeOAuthCodeForAccessToken(
 		c.Query("code"),
-		clientID,
-		clientSecret,
+		ClientID,
+		ClientSecret,
 		"http://localhost:8080/oauth/redirect",
 	)
 	if err != nil {
@@ -69,7 +69,7 @@ func oauthRedirectRoute(c *gin.Context) {
 	log.Printf("oauthError: %+v", oauthErr)
 	log.Printf("token: %+v", token.AccessToken)
 
-	userResp, faErrors, err := client.RetrieveUserUsingJWT(token.AccessToken)
+	userResp, faErrors, err := faClient.RetrieveUserUsingJWT(token.AccessToken)
 	if err != nil {
 		log.Fatal(err)
 		c.String(http.StatusInternalServerError, "There was an issue.")
@@ -79,12 +79,45 @@ func oauthRedirectRoute(c *gin.Context) {
 	log.Printf("user: %+v", userResp.User)
 
 	session := sessions.Default(c)
-	session.Set("userFirstName", userResp.User.FirstName)
+	session.Set("user_id", userResp.User.Id)
 	session.Save()
 
-	c.Redirect(http.StatusMovedPermanently, "/")
+	userSesh := userSession{
+		user: userResp.User,
+		accessToken: token.AccessToken,
+		refreshToken: token.RefreshToken,
+	}
+
+	userStore[userResp.User.Id] = userSesh
+
+	c.Redirect(http.StatusFound, "/")
+}
+
+func logoutRoute(c *gin.Context) {
+	user := getUser(c)
+
+	session := sessions.Default(c)
+	session.Clear()
+	session.Save()
+
+	faClient.Logout(true, user.refreshToken)
+
+	c.Redirect(http.StatusFound, "/")
 }
 
 func authdRoute(c *gin.Context) {
 	c.String(http.StatusOK, "You're Auth'd!")
+}
+
+func getUser(c *gin.Context) (userSesh userSession) {
+	session := sessions.Default(c)
+	userID, ok := session.Get("user_id").(string)
+
+	if !ok || userID == "" {
+		return userSession{
+			user: fusionauth.User{},
+		}
+	}
+
+	return userStore[userID]
 }
