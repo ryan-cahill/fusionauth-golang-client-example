@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 services:
   db:
@@ -7,9 +7,9 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-# Un-comment to access the db service directly
-#    ports:
-#      - 5432:5432
+    # Un-comment to access the db service directly
+    #    ports:
+    #      - 5432:5432
     networks:
       - db
     restart: unless-stopped
@@ -28,10 +28,10 @@ services:
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
       FUSIONAUTH_MEMORY: ${FUSIONAUTH_MEMORY}
       FUSIONAUTH_SEARCH_ENGINE_TYPE: database
-      FUSIONAUTH_URL: http://fusionauth:9011
+      FUSIONAUTH_URL: http://localhost:9011
       FUSIONAUTH_RUNTIME_MODE: development
     networks:
-     - db
+      - db
     restart: unless-stopped
     ports:
       - 9011:9011
