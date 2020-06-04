@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"net/url"
@@ -12,26 +13,23 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const (
-	host string = "http://localhost:9011"
-)
-
 var (
 	httpClient = &http.Client{
 		Timeout: time.Second * 10,
 	}
-	baseURL, _ = url.Parse(host)
 	userStore = make(map[string]userSession)
-	faClient *fusionauth.FusionAuthClient
+	faClient  *fusionauth.FusionAuthClient
 )
 
 type userSession struct {
-	user fusionauth.User
-	accessToken string
+	user         fusionauth.User
+	accessToken  string
 	refreshToken string
 }
 
 func setupRouter() *gin.Engine {
+	host := fmt.Sprintf("http://%s:%s", FAHost, FAPort)
+	baseURL, _ := url.Parse(host)
 	faClient = fusionauth.NewClient(httpClient, baseURL, ApiKey)
 
 	r := gin.Default()
@@ -51,7 +49,7 @@ func setupRouter() *gin.Engine {
 
 func indexRoute(c *gin.Context) {
 	userSesh := getUser(c)
-	c.HTML(http.StatusOK, "index.tmpl", gin.H{ "Name": userSesh.user.FirstName, "ClientID": ClientID })
+	c.HTML(http.StatusOK, "index.tmpl", gin.H{"Name": userSesh.user.FirstName, "ClientID": ClientID})
 }
 
 func oauthRedirectRoute(c *gin.Context) {
@@ -83,8 +81,8 @@ func oauthRedirectRoute(c *gin.Context) {
 	session.Save()
 
 	userSesh := userSession{
-		user: userResp.User,
-		accessToken: token.AccessToken,
+		user:         userResp.User,
+		accessToken:  token.AccessToken,
 		refreshToken: token.RefreshToken,
 	}
 
