@@ -10,7 +10,7 @@ import (
 var (
 	ClientID     string
 	ClientSecret string
-	ApiKey       string
+	APIKey       string
 	FAHost       string
 	FAPort       string
 )
@@ -19,7 +19,7 @@ func main() {
 	godotenv.Load(".env")
 	ClientID = os.Getenv("FA_CLIENT_ID")
 	ClientSecret = os.Getenv("FA_CLIENT_SECRET")
-	ApiKey = os.Getenv("FA_API_KEY")
+	APIKey = os.Getenv("FA_API_KEY")
 	FAHost = os.Getenv("FA_HOST")
 	FAPort = os.Getenv("FA_PORT")
 

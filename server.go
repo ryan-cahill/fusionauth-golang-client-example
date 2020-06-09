@@ -30,7 +30,7 @@ type userSession struct {
 func setupRouter() *gin.Engine {
 	host := fmt.Sprintf("http://%s:%s", FAHost, FAPort)
 	baseURL, _ := url.Parse(host)
-	faClient = fusionauth.NewClient(httpClient, baseURL, ApiKey)
+	faClient = fusionauth.NewClient(httpClient, baseURL, APIKey)
 
 	r := gin.Default()
 
