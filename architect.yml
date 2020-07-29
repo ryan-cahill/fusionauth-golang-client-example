@@ -1,28 +1,46 @@
-name: gowiem/fa-golang-example
-description: A small Golang API for testing FusionAuth
-language: golang
-keywords:
-  - golang
-  - example
-  - architect
-  - fusionauth
+name: ryan-cahill-a0/fusionauth
+author: Architect.io
+
 interfaces:
-  public:
-    description: Publicly accessible API
-    port: 8080
-parameters:
-  FA_HOST:
-    default: ${ dependencies['gowiem/fusionauth'].interfaces.public.external.host }
-  FA_PORT:
-    default: ${ dependencies['gowiem/fusionauth'].interfaces.public.external.port }
-  FA_CLIENT_ID:
-    default: 8cc4c901-1852-4e62-a655-699f2c94ffdc
-  FA_CLIENT_SECRET:
-    default: OshhDO0d1Y6Hrejsd697Yo4unTar_gI00fHiIASMZGc
-  FA_API_KEY:
-    default: vB_ap-t-zsCbOYv9HhETbbRm1Ue8C3FFP28qJQWfNTo
-  PUBLIC_PORT:
-    description: The port the public API should listen on
-    default: 8080
-dependencies:
-  gowiem/fusionauth: latest
+  app: ${ services.app.interfaces.main.url }
+
+services:
+  app:
+    build:
+      context: ./
+    language: go
+    description: Example Go service to test Fusionauth
+    interfaces:
+      main: 8080
+
+  fusionauth:
+    image: fusionauth/fusionauth-app:latest
+    interfaces:
+      main: 9011
+    environment:
+      DATABASE_URL: jdbc:${ services.db.interfaces.main.url }/${ services.db.environment.POSTGRES_DB }
+      DATABASE_ROOT_USER: ${services.db.environment.POSTGRES_USER}
+      DATABASE_ROOT_PASSWORD: ${services.db.environment.POSTGRES_PASSWORD}
+      DATABASE_USER: ${services.db.environment.POSTGRES_USER}
+      DATABASE_PASSWORD: ${services.db.environment.POSTGRES_PASSWORD}
+      FUSIONAUTH_SEARCH_ENGINE_TYPE: database
+      FUSIONAUTH_URL: ${services.db.interfaces.main.url}
+      FUSIONAUTH_RUNTIME_MODE: development
+      FUSIONAUTH_MEMORY: 512M
+
+  db:
+    image: postgres:9.6
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: fusionauth
+    interfaces:
+      main:
+        port: 5432
+        protocol: postgresql
+    # debug: TODO
+    #   volumes:
+    #     db_data:
+    #       host_path: db_datareact-app
+    #       mount_path: /var/lib/postgresql/data

@@ -1,0 +1,5 @@
+interfaces:
+  app: ${ components['ryan-cahill-a0/fusionauth'].interfaces.app.url }
+
+components:
+  ryan-cahill-a0/fusionauth: file:./
