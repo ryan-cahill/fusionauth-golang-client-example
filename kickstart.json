@@ -1,0 +1,40 @@
+{
+  "variables": {
+    "apiKey": "#{ENV.FUSIONAUTH_API_KEY}",
+    "adminUserEmail": "#{ENV.ADMIN_USER_EMAIL}",
+    "adminUserPassword": "#{ENV.ADMIN_USER_PASSWORD}"
+  },
+  "apiKeys": [
+    {
+      "key": "#{apiKey}"
+    }
+  ],
+  "requests": [
+    {
+      "method": "POST",
+      "url": "/api/user/registration",
+      "body": {
+        "user": {
+          "email": "#{adminUserEmail}",
+          "password": "#{adminUserPassword}"
+        },
+        "registration": {
+          "applicationId": "#{FUSIONAUTH_APPLICATION_ID}",
+          "roles": ["admin"]
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "url": "/api/application/8cc4c901-1852-4e62-a655-699f2c94ffdc",
+      "body": {
+        "application": {
+          "name": "test_app",
+          "oauthConfiguration": {
+            "clientSecret": "OshhDO0d1Y6Hrejsd697Yo4unTar_gI00fHiIASMZGc"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -3,6 +3,11 @@ author: Architect.io
 
 interfaces:
   app: ${ services.app.interfaces.main.url }
+  auth: ${ services.fusionauth.interfaces.http.url }
+
+parameters:
+  FUSIONAUTH_API_KEY:
+  FUSIONAUTH_RUNTIME_MODE:
 
 services:
   app:
@@ -10,13 +15,18 @@ services:
       context: ./
     language: go
     description: Example Go service to test Fusionauth
+    environment:
+      PUBLIC_PORT: ${services.app.interfaces.main.port}
+      FA_HOST: ${ interfaces.auth.host }
+      FA_PORT: ${ interfaces.auth.port }
+      FA_CLIENT_ID: 8cc4c901-1852-4e62-a655-699f2c94ffdc
+      FA_CLIENT_SECRET: OshhDO0d1Y6Hrejsd697Yo4unTar_gI00fHiIASMZGc
+      FA_API_KEY: ${ parameters.FUSIONAUTH_API_KEY }
     interfaces:
       main: 8080
 
   fusionauth:
     image: fusionauth/fusionauth-app:latest
-    interfaces:
-      main: 9011
     environment:
       DATABASE_URL: jdbc:${ services.db.interfaces.main.url }/${ services.db.environment.POSTGRES_DB }
       DATABASE_ROOT_USER: ${services.db.environment.POSTGRES_USER}
@@ -24,14 +34,26 @@ services:
       DATABASE_USER: ${services.db.environment.POSTGRES_USER}
       DATABASE_PASSWORD: ${services.db.environment.POSTGRES_PASSWORD}
       FUSIONAUTH_SEARCH_ENGINE_TYPE: database
-      FUSIONAUTH_URL: ${services.db.interfaces.main.url}
-      FUSIONAUTH_RUNTIME_MODE: development
+      FUSIONAUTH_URL: ${services.fusionauth.interfaces.http.url}
+      FUSIONAUTH_RUNTIME_MODE: ${ parameters.FUSIONAUTH_RUNTIME_MODE }
       FUSIONAUTH_MEMORY: 512M
+      FUSIONAUTH_API_KEY: ${ parameters.FUSIONAUTH_API_KEY }
+      FUSIONAUTH_HTTP_PORT: ${ services.fusionauth.interfaces.http.port }
+      ADMIN_USER_EMAIL: ryan.cahill@architect.io
+      ADMIN_USER_PASSWORD: password
+      FUSIONAUTH_KICKSTART: /usr/local/fusionauth/kickstart.json
+    interfaces:
+      http: 9011
+    debug:
+      volumes:
+        kickstart:
+          host_path: ./kickstart.json
+          mount_path: /usr/local/fusionauth/kickstart.json
 
   db:
     image: postgres:9.6
     environment:
-      PGDATA: /var/lib/postgresql/data/pgdata
+      # PGDATA: /var/lib/postgresql/data/pgdata
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: fusionauth

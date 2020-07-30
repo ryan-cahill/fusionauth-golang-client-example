@@ -1,5 +1,11 @@
 interfaces:
   app: ${ components['ryan-cahill-a0/fusionauth'].interfaces.app.url }
+  auth: ${ components['ryan-cahill-a0/fusionauth'].interfaces.auth.url }
 
 components:
-  ryan-cahill-a0/fusionauth: file:./
+  ryan-cahill-a0/fusionauth:
+    extends: file:./architect.yml
+    parameters:
+      FUSIONAUTH_API_KEY: sJfDg7AU9p53kdVBryk2UarvAMcShZjdTqWAVqPBY2M
+      # FUSIONAUTH_APPLICATION_ID:
+      FUSIONAUTH_RUNTIME_MODE: development
