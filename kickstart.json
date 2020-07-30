@@ -2,7 +2,9 @@
   "variables": {
     "apiKey": "#{ENV.FUSIONAUTH_API_KEY}",
     "adminUserEmail": "#{ENV.ADMIN_USER_EMAIL}",
-    "adminUserPassword": "#{ENV.ADMIN_USER_PASSWORD}"
+    "adminUserPassword": "#{ENV.ADMIN_USER_PASSWORD}",
+    "clientId": "#{ENV.FUSIONAUTH_CLIENT_ID}",
+    "clientSecret": "#{ENV.FUSIONAUTH_CLIENT_SECRET}"
   },
   "apiKeys": [
     {
@@ -26,12 +28,12 @@
     },
     {
       "method": "POST",
-      "url": "/api/application/8cc4c901-1852-4e62-a655-699f2c94ffdc",
+      "url": "/api/application/#{clientId}",
       "body": {
         "application": {
           "name": "test_app",
           "oauthConfiguration": {
-            "clientSecret": "OshhDO0d1Y6Hrejsd697Yo4unTar_gI00fHiIASMZGc"
+            "clientSecret": "#{clientSecret}"
           }
         }
       }
