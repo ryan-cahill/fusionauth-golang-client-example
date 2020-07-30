@@ -7,8 +7,11 @@ interfaces:
 
 parameters:
   FUSIONAUTH_API_KEY:
+    required: false
   FUSIONAUTH_CLIENT_ID:
+    required: false
   FUSIONAUTH_CLIENT_SECRET:
+    required: false
   FUSIONAUTH_RUNTIME_MODE:
 
 services:
@@ -29,6 +32,7 @@ services:
 
   fusionauth:
     image: fusionauth/fusionauth-app:latest
+    description: Fusionauth service built from public image
     environment:
       DATABASE_URL: jdbc:${ services.db.interfaces.main.url }/${ services.db.environment.POSTGRES_DB }
       DATABASE_ROOT_USER: ${ services.db.environment.POSTGRES_USER }
@@ -38,7 +42,7 @@ services:
       FUSIONAUTH_SEARCH_ENGINE_TYPE: database
       FUSIONAUTH_URL: ${ services.fusionauth.interfaces.http.url }
       FUSIONAUTH_RUNTIME_MODE: ${ parameters.FUSIONAUTH_RUNTIME_MODE }
-      FUSIONAUTH_MEMORY: 512M
+      FUSIONAUTH_MEMORY: 256M # setting above architect kubernetes pod memory limit will result in the pod error Terminated: OOMKilled
       FUSIONAUTH_API_KEY: ${ parameters.FUSIONAUTH_API_KEY }
       FUSIONAUTH_HTTP_PORT: ${ services.fusionauth.interfaces.http.port }
       ADMIN_USER_EMAIL: ryan.cahill@architect.io
@@ -57,6 +61,7 @@ services:
 
   db:
     image: postgres:9.6
+    description: Postgres 9.6 backend for Fusionauth
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres

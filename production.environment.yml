@@ -1,0 +1,9 @@
+interfaces:
+  app: ${ components['ryan-cahill-a0/fusionauth'].interfaces.app.url }
+  auth: ${ components['ryan-cahill-a0/fusionauth'].interfaces.auth.url }
+
+components:
+  ryan-cahill-a0/fusionauth:
+    extends: latest
+    parameters:
+      FUSIONAUTH_RUNTIME_MODE: production
