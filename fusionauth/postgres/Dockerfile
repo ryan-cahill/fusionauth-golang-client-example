@@ -9,5 +9,3 @@ RUN wget https://files.fusionauth.io/products/fusionauth/1.18.4/fusionauth-datab
   mkdir fusionauth_migrations && unzip fusionauth-database-schema-1.18.4.zip -d fusionauth_migrations/ && \
   cp fusionauth_migrations/postgresql.sql /docker-entrypoint-initdb.d/0-base-migration.sql && \
   cp fusionauth_migrations/migrations/postgresql/1.18.2.sql /docker-entrypoint-initdb.d/1-1.18.2.sql
-  # cp fusionauth_migrations/migrations/postgresql/1.18.0.sql /docker-entrypoint-initdb.d/2-1.18.0.sql && \
-  # cp fusionauth_migrations/migrations/postgresql/1.17.3.sql /docker-entrypoint-initdb.d/3-1.17.3.sql
