@@ -6,11 +6,8 @@ interfaces:
 
 parameters:
   FUSIONAUTH_API_KEY:
-    required: false
   FUSIONAUTH_CLIENT_ID:
-    required: false
   FUSIONAUTH_CLIENT_SECRET:
-    required: false
   FUSIONAUTH_RUNTIME_MODE:
 
 services:
@@ -32,17 +29,12 @@ services:
       FUSIONAUTH_HTTP_PORT: ${ services.fusionauth.interfaces.http.port }
       ADMIN_USER_EMAIL: ryan.cahill@architect.io
       ADMIN_USER_PASSWORD: password
-      FUSIONAUTH_KICKSTART: /usr/local/fusionauth/kickstart.json  # TODO seed to prod also
+      FUSIONAUTH_KICKSTART: /usr/local/fusionauth/kickstart.json
       FUSIONAUTH_CLIENT_ID: ${ parameters.FUSIONAUTH_CLIENT_ID }
       FUSIONAUTH_CLIENT_SECRET: ${ parameters.FUSIONAUTH_CLIENT_SECRET }
     interfaces:
       http: 9011
     language: java
-    # debug:
-    #   volumes:
-    #     kickstart:
-    #       host_path: ./kickstart.json # TODO seed to prod also (will be done in dockerfile)
-    #       mount_path: /usr/local/fusionauth/kickstart.json
 
   db:
     build:

@@ -9,11 +9,9 @@ dependencies:
 
 parameters:
   FUSIONAUTH_API_KEY:
-    required: false
   FUSIONAUTH_CLIENT_ID:
-    required: false
   FUSIONAUTH_CLIENT_SECRET:
-    required: false
+  FUSIONAUTH_RUNTIME_MODE:
 
 services:
   app:
@@ -28,5 +26,6 @@ services:
       FA_CLIENT_ID: ${ parameters.FUSIONAUTH_CLIENT_ID }
       FA_CLIENT_SECRET: ${ parameters.FUSIONAUTH_CLIENT_SECRET }
       FA_API_KEY: ${ parameters.FUSIONAUTH_API_KEY }
+      FUSIONAUTH_RUNTIME_MODE: ${ parameters.FUSIONAUTH_RUNTIME_MODE }
     interfaces:
       main: 8080

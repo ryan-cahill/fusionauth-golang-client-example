@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"time"
 
 	"github.com/FusionAuth/go-client/pkg/fusionauth"
@@ -49,7 +50,7 @@ func setupRouter() *gin.Engine {
 
 func indexRoute(c *gin.Context) {
 	userSesh := getUser(c)
-	c.HTML(http.StatusOK, "index.tmpl", gin.H{"Name": userSesh.user.FirstName, "ClientID": ClientID, "Host": FAHost, "Port": FAPort})
+	c.HTML(http.StatusOK, "index.tmpl", gin.H{"Name": userSesh.user.FirstName, "ClientID": ClientID, "Host": FAHost, "Port": FAPort, "Environment": os.Getenv("FUSIONAUTH_RUNTIME_MODE")})
 }
 
 func oauthRedirectRoute(c *gin.Context) {

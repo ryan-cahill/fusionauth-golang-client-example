@@ -7,10 +7,15 @@
     <p> Welcome to the FusionAuth Golang Client Example :) </p>
 
     {{ if (eq .Name "") }}
-
-        <a href="http://{{.Host}}:{{.Port}}/oauth2/authorize?client_id={{.ClientID}}&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8080/oauth/redirect&scope=offline_access" >
-            Login
-        </a>
+        {{ if (eq .Environment "development") }}
+            <a href="http://{{.Host}}:{{.Port}}/oauth2/authorize?client_id={{.ClientID}}&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8080/oauth/redirect&scope=offline_access" >
+                Dev Login
+            </a>
+        {{ else }}
+            <a href="https://{{.Host}}:{{.Port}}/oauth2/authorize?client_id={{.ClientID}}&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8080/oauth/redirect&scope=offline_access" >
+                Prod Login
+            </a>
+        {{ end }}
     {{ else }}
         <p> You're logged in! </p>
         <a href="/logout" >
