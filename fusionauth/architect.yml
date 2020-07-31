@@ -15,7 +15,8 @@ parameters:
 
 services:
   fusionauth:
-    image: fusionauth/fusionauth-app:latest
+    build:
+      context: ./fusionauth
     description: Fusionauth service built from public image
     environment:
       DATABASE_URL: jdbc:${ services.db.interfaces.main.url }/${ services.db.environment.POSTGRES_DB }
@@ -44,12 +45,14 @@ services:
     #       mount_path: /usr/local/fusionauth/kickstart.json
 
   db:
-    image: postgres:9.6
+    build:
+      context: ./postgres
     description: Postgres 9.6 backend for Fusionauth
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: fusionauth
+      FUSIONAUTH_RUNTIME_MODE: ${ parameters.FUSIONAUTH_RUNTIME_MODE }
     interfaces:
       main:
         port: 5432

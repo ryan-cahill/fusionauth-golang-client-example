@@ -17,3 +17,4 @@ components:
       FUSIONAUTH_CLIENT_ID: 8cc4c901-1852-4e62-a655-699f2c94ffdc
       FUSIONAUTH_CLIENT_SECRET: OshhDO0d1Y6Hrejsd697Yo4unTar_gI00fHiIASMZGc
       FUSIONAUTH_RUNTIME_MODE: development
+      # TODO: flag to run migrations for prod?
